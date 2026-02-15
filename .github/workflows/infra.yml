@@ -1,0 +1,20 @@
+name: Infrastructure CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docker/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Validate DEV Compose
+        run: docker compose -f docker/docker-compose.dev.yml config
+
+      - name: Validate PROD Compose
+        run: docker compose -f docker/docker-compose.prod.yml config
