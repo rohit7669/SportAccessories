@@ -1,0 +1,25 @@
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://sports-center-mysql:3306/sports-center
+    username: root
+    password: password
+  application:
+    name: SportsCenter
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+  data:
+    redis:
+      host: sports-center-redis-container   # <-- Update this to match your Redis container name
+      port: 6379
