@@ -1,0 +1,113 @@
+name: Sport Accessories CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+      - 'server/**'
+      - 'docker/**'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  # ==========================================
+  # FRONTEND BUILD & PUSH
+  # ==========================================
+  frontend:
+    if: contains(join(github.event.commits.*.modified, ','), 'client/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Frontend Image
+        run: |
+          docker build \
+          -f frontend.Dockerfile \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/sport-frontend:latest \
+          .
+
+      - name: Push Frontend Image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/sport-frontend:latest
+
+
+  # ==========================================
+  # BACKEND BUILD & PUSH
+  # ==========================================
+  backend:
+    if: contains(join(github.event.commits.*.modified, ','), 'server/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Backend Image
+        run: |
+          docker build \
+          -f backend.Dockerfile \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/sport-backend:latest \
+          .
+
+      - name: Push Backend Image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/sport-backend:latest
+
+
+  # ==========================================
+  # DATABASE / INFRA VALIDATION
+  # ==========================================
+  database:
+    if: contains(join(github.event.commits.*.modified, ','), 'docker/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Validate DEV Compose
+        run: |
+          docker compose -f docker/docker-compose.dev.yml config
+
+      - name: Validate PROD Compose
+        run: |
+          docker compose -f docker/docker-compose.prod.yml config
+
+
+  # ==========================================
+  # OPTIONAL: FULL STACK TEST USING DEV COMPOSE
+  # ==========================================
+  integration-test:
+    if: contains(join(github.event.commits.*.modified, ','), 'server/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Start Full Dev Stack
+        run: |
+          docker compose -f docker/docker-compose.dev.yml up -d
+          sleep 25
+
+      - name: Show Running Containers
+        run: docker ps
+
+      - name: Shutdown Stack
+        run: docker compose -f docker/docker-compose.dev.yml down

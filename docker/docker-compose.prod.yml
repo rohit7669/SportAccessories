@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: sports-center-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: sports-center
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - sport-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: sports-center-redis-container
+    volumes:
+      - redis-data:/data
+    networks:
+      - sport-network
+
+  backend:
+    image: rohit7669/sport-backend:latest
+    container_name: sport-backend
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8081:8081"
+    networks:
+      - sport-network
+
+  frontend:
+    image: rohit7669/sport-frontend:latest
+    container_name: sport-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - sport-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  sport-network:
