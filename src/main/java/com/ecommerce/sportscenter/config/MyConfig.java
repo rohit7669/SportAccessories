@@ -15,7 +15,7 @@ public class MyConfig {
     public UserDetailsService userDetailsService(){
         UserDetails userDetails = User.builder()
                 .username("rohit")
-                .password(passwordEncoder().encode("Testing123"))
+                .password(passwordEncoder().encode("Test123"))
                 .roles("admin")
                 .build();
         return new InMemoryUserDetailsManager(userDetails);
