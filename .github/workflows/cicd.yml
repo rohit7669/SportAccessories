@@ -7,6 +7,9 @@ on:
       - 'client/**'
       - 'server/**'
       - 'docker/**'
+      - 'backend.Dockerfile'
+      - 'frontend.Dockerfile'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main ]
 
