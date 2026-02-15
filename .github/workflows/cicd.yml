@@ -45,7 +45,7 @@ jobs:
   # BACKEND BUILD & PUSH
   # ==========================================
   backend:
-    if: contains(join(github.event.commits.*.modified, ','), 'server/')
+    if: contains(join(github.event.commits.*.modified, ','), 'src/')
     runs-on: ubuntu-latest
 
     steps:
@@ -94,7 +94,7 @@ jobs:
   # OPTIONAL: FULL STACK TEST USING DEV COMPOSE
   # ==========================================
   integration-test:
-    if: contains(join(github.event.commits.*.modified, ','), 'server/')
+    if: contains(join(github.event.commits.*.modified, ','), 'src/')
     runs-on: ubuntu-latest
 
     steps:
