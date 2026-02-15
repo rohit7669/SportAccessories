@@ -24,7 +24,8 @@ INSERT INTO Brand (Name) VALUES
                              ('Yonex'),
                              ('Puma'),
                              ('Nike'),
-                             ('Babolat');
+                             ('Babolat'),
+                             ('Bata');
 
 -- Create the Type table
 CREATE TABLE `Type` (
