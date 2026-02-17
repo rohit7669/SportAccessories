@@ -1,0 +1,48 @@
+name: CD to EC2
+
+on:
+  push:
+    branches: [ main ]  # Trigger on main branch changes
+    paths:
+      - 'src/**'
+      - 'client/**'
+      - 'docker/**'
+      - 'backend.Dockerfile'
+      - 'frontend.Dockerfile'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}         # EC2 public IP
+          username: ubuntu                      # EC2 username (default for Ubuntu AMI)
+          key: ${{ secrets.EC2_SSH_KEY }}      # Your PEM key from secrets
+          script: |
+            echo "Pulling latest backend image..."
+            docker pull rohit7669/sport-backend:latest
+
+            echo "Pulling latest frontend image..."
+            docker pull rohit7669/sport-frontend:latest
+
+            echo "Stopping old containers if they exist..."
+            docker stop sport-backend sport-frontend || true
+            docker rm sport-backend sport-frontend || true
+
+            echo "Running backend container..."
+            docker run -d --name sport-backend \
+              --network sport-network \
+              -p 8081:8081 \
+              rohit7669/sport-backend:latest
+
+            echo "Running frontend container..."
+            docker run -d --name sport-frontend \
+              --network sport-network \
+              -p 80:80 \
+              rohit7669/sport-frontend:latest
