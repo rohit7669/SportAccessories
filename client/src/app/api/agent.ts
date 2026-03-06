@@ -6,7 +6,9 @@ import { Dispatch } from "redux";
 import { Product } from "../models/product";
 import { Basket } from "../models/basket";
 
-axios.defaults.baseURL ='http://65.1.85.172:8081/api/';
+const API_BASE_URL = (window as any).RUNTIME_CONFIG.API_BASE_URL;
+
+axios.defaults.baseURL ='${API_BASE_URL}/';
 
 const idle = () => new Promise(resolve => setTimeout(resolve, 100));
 const responseBody = (response: AxiosResponse) => response.data;
@@ -39,7 +41,7 @@ const requests = {
 }
 
 const Store = {
-    apiUrl: 'http://65.1.85.172:8081/api/products',
+    apiUrl: '${API_BASE_URL}/products',
     list:(page: number, size: number, brandId?: number, typeId?: number, url?: string)=> {
       let requestUrl = url || `products?page=${page-1}&size=${size}`;
       if(brandId!==undefined){

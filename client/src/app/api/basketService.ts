@@ -5,8 +5,12 @@ import { Dispatch } from "redux";
 import { setBasket } from "../../features/basket/basketSlice";
 import { createId } from "@paralleldrive/cuid2";
 
+const apiBaseUrl = (window as any).RUNTIME_CONFIG.API_BASE_URL;
+
 class BasketService {
-    apiUrl = "http://65.1.85.172:8081/api/baskets";
+
+    
+    apiUrl = '${baseUrl}/baskets';
 
     async getBasketFromApi(){
         try{
