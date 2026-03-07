@@ -3,23 +3,25 @@ kind: Ingress
 metadata:
   name: sport-ingress
   namespace: sport-app
-
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
-
   rules:
-
-  - host: sport.local
-
+  - host: ""
     http:
-
       paths:
-
       - path: /
         pathType: Prefix
-
         backend:
           service:
-            name: frontend
+            name: frontend-service
             port:
               number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080
