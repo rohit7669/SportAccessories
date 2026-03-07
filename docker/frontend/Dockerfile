@@ -15,7 +15,7 @@ FROM nginx:alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
 
-COPY client/public/config.js /usr/share/nginx/html/config.js
+COPY client/public/runtime-config.js /usr/share/nginx/html/runtime-config.js
 
 EXPOSE 80
 
