@@ -13,39 +13,42 @@ spec:
       labels:
         app: backend
     spec:
-      # Init container waits for MySQL to be ready
-      initContainers:
-        - name: wait-for-mysql
-          image: busybox:1.36
-          command:
-            - sh
-            - -c
-            - |
-              echo "Waiting for MySQL at $DB_HOST:$DB_PORT..."
-              until nc -z $DB_HOST $DB_PORT; do
-                echo "MySQL not ready yet, sleeping 3s..."
-                sleep 3
-              done
-              echo "MySQL is up!"
-          env:
-            - name: DB_HOST
-              value: mysql
-            - name: DB_PORT
-              value: "3306"
 
+      initContainers:
+      - name: wait-for-db-redis
+        image: busybox:1.36
+        command:
+          - sh
+          - -c
+          - |
+            echo "Waiting for MySQL..."
+            while ! nc -z mysql 3306; do
+              sleep 2
+            done
+            echo "MySQL is up"
+            echo "Waiting for Redis..."
+            while ! nc -z redis 6379; do
+              sleep 2
+            done
+            echo "Redis is up"
+      
       containers:
-        - name: backend
-          image: rohit7669/sport-backend:latest
-          ports:
-            - containerPort: 8081
-          env:
-            - name: DB_HOST
-              value: mysql
-            - name: DB_PORT
-              value: "3306"
-            - name: DB_NAME
-              value: sports_center
-            - name: DB_USER
-              value: root
-            - name: DB_PASSWORD
-              value: root
+      - name: backend
+        image: rohit7669/sport-backend:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_NAME
+          value: sports_center
+        - name: DB_USER
+          value: root
+        - name: DB_PASSWORD
+          value: root
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
