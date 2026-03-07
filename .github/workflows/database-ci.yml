@@ -1,0 +1,20 @@
+name: Database CI
+
+on:
+  push:
+    paths:
+      - 'Database/**'
+      - 'docker/database/**'
+
+jobs:
+
+  validate:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: SQL validation
+      run: echo "Database changes detected"
